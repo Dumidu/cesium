@@ -251,7 +251,7 @@ define([
      */
     PolylineGeometryUpdater.prototype.isFilled = function(time) {
         var entity = this._entity;
-        return this._fillEnabled && entity.isAvailable(time) && this._showProperty.getValue(time);
+        return this._fillEnabled && entity.isShowing(time);
     };
 
     /**
@@ -460,7 +460,7 @@ define([
         var polyline = entity.polyline;
         var line = this._line;
 
-        if (!entity.isAvailable(time) || !Property.getValueOrDefault(polyline._show, time, true)) {
+        if (!entity.isShowing(time) || !Property.getValueOrDefault(polyline._show, time, true)) {
             line.show = false;
             return;
         }

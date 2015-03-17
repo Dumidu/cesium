@@ -26,7 +26,6 @@ define([
         this.oldPrimitive = undefined;
         this.geometry = new AssociativeArray();
         this.material = undefined;
-        this.updatersWithAttributes = new AssociativeArray();
         this.attributes = new AssociativeArray();
         this.invalidated = false;
         this.removeMaterialSubscription = materialProperty.definitionChanged.addEventListener(Batch.prototype.onMaterialChanged, this);
@@ -52,9 +51,6 @@ define([
         var id = updater.entity.id;
         this.updaters.set(id, updater);
         this.geometry.set(id, updater.createFillGeometryInstance(time));
-        if (!updater.hasConstantFill || !updater.fillMaterialProperty.isConstant) {
-            this.updatersWithAttributes.set(id, updater);
-        }
         this.createPrimitive = true;
     };
 
@@ -62,7 +58,6 @@ define([
         var id = updater.entity.id;
         this.createPrimitive = this.updaters.remove(id);
         this.geometry.remove(id);
-        this.updatersWithAttributes.remove(id);
         return this.createPrimitive;
     };
 
@@ -105,10 +100,10 @@ define([
             this.material = MaterialProperty.getValue(time, this.materialProperty, this.material);
             this.primitive.appearance.material = this.material;
 
-            var updatersWithAttributes = this.updatersWithAttributes.values;
-            var length = updatersWithAttributes.length;
+            var updaters = this.updaters.values;
+            var length = updaters.length;
             for (var i = 0; i < length; i++) {
-                var updater = updatersWithAttributes[i];
+                var updater = updaters[i];
                 var instance = this.geometry.get(updater.entity.id);
 
                 var attributes = this.attributes.get(instance.id.id);
@@ -117,12 +112,10 @@ define([
                     this.attributes.set(instance.id.id, attributes);
                 }
 
-                if (!updater.hasConstantFill) {
-                    var show = updater.isFilled(time);
-                    var currentShow = attributes.show[0] === 1;
-                    if (show !== currentShow) {
-                        attributes.show = ShowGeometryInstanceAttribute.toValue(show, attributes.show);
-                    }
+                var show = updater.isFilled(time);
+                var currentShow = attributes.show[0] === 1;
+                if (show !== currentShow) {
+                    attributes.show = ShowGeometryInstanceAttribute.toValue(show, attributes.show);
                 }
             }
         } else if (defined(primitive) && !primitive.ready) {

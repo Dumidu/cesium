@@ -277,7 +277,7 @@ define([
      */
     EllipsoidGeometryUpdater.prototype.isOutlineVisible = function(time) {
         var entity = this._entity;
-        return this._outlineEnabled && entity.isAvailable(time) && this._showProperty.getValue(time) && this._showOutlineProperty.getValue(time);
+        return this._outlineEnabled && entity.isShowing(time) && this._showOutlineProperty.getValue(time);
     };
 
     /**
@@ -288,7 +288,7 @@ define([
      */
     EllipsoidGeometryUpdater.prototype.isFilled = function(time) {
         var entity = this._entity;
-        return this._fillEnabled && entity.isAvailable(time) && this._showProperty.getValue(time) && this._fillProperty.getValue(time);
+        return this._fillEnabled && entity.isShowing(time) && this._fillProperty.getValue(time);
     };
 
     /**
@@ -535,7 +535,7 @@ define([
 
         var entity = this._entity;
         var ellipsoid = entity.ellipsoid;
-        if (!entity.isAvailable(time) || !Property.getValueOrDefault(ellipsoid.show, time, true)) {
+        if (!entity.isShowing(time) || !Property.getValueOrDefault(ellipsoid.show, time, true)) {
             if (defined(this._primitive)) {
                 this._primitive.show = false;
             }

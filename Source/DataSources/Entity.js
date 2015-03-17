@@ -133,6 +133,7 @@ define([
         this._id = id;
         this._definitionChanged = new Event();
         this._name = undefined;
+        this._show = true;
         this._parent = options.parent;
         this._propertyNames = ['billboard', 'box', 'corridor', 'cylinder', 'description', 'ellipse', //
                                'ellipsoid', 'label', 'model', 'orientation', 'path', 'point', 'polygon', //
@@ -219,19 +220,14 @@ define([
          * @memberof Entity.prototype
          * @type {String}
          */
-        name : {
-            configurable : false,
-            get : function() {
-                return this._name;
-            },
-            set : function(value) {
-                var oldValue = this._name;
-                if (oldValue !== value) {
-                    this._name = value;
-                    this._definitionChanged.raiseEvent(this, 'name', value, oldValue);
-                }
-            }
-        },
+        name : createRawPropertyDescriptor('name'),
+        /**
+         * Gets or sets the name of the object.  The name is intended for end-user
+         * consumption and does not need to be unique.
+         * @memberof Entity.prototype
+         * @type {String}
+         */
+        show : createRawPropertyDescriptor('show'),
         /**
          * Gets or sets the parent object.
          * @memberof Entity.prototype
@@ -489,6 +485,16 @@ define([
     var matrix3Scratch = new Matrix3();
     var positionScratch = new Cartesian3();
     var orientationScratch = new Quaternion();
+
+    /**
+     * Given a time, returns true if this entity should be displayed at that time.
+     *
+     * @param {JulianDate} time The time to check availability for.
+     * @returns true if this entity should be displayed during the provided time, false otherwise.
+     */
+    Entity.prototype.isShowing = function(time) {
+        return this._show && this.isAvailable(time) && (!defined(this._parent) || this._parent.isShowing(time));
+    };
 
     /**
      * @private

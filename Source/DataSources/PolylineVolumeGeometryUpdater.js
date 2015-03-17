@@ -268,7 +268,7 @@ define([
      */
     PolylineVolumeGeometryUpdater.prototype.isOutlineVisible = function(time) {
         var entity = this._entity;
-        return this._outlineEnabled && entity.isAvailable(time) && this._showProperty.getValue(time) && this._showOutlineProperty.getValue(time);
+        return this._outlineEnabled && entity.isShowing(time) && this._showOutlineProperty.getValue(time);
     };
 
     /**
@@ -279,7 +279,7 @@ define([
      */
     PolylineVolumeGeometryUpdater.prototype.isFilled = function(time) {
         var entity = this._entity;
-        return this._fillEnabled && entity.isAvailable(time) && this._showProperty.getValue(time) && this._fillProperty.getValue(time);
+        return this._fillEnabled && entity.isShowing(time) && this._fillProperty.getValue(time);
     };
 
     /**
@@ -516,7 +516,7 @@ define([
         var geometryUpdater = this._geometryUpdater;
         var entity = geometryUpdater._entity;
         var polylineVolume = entity.polylineVolume;
-        if (!entity.isAvailable(time) || !Property.getValueOrDefault(polylineVolume.show, time, true)) {
+        if (!entity.isShowing(time) || !Property.getValueOrDefault(polylineVolume.show, time, true)) {
             return;
         }
 
